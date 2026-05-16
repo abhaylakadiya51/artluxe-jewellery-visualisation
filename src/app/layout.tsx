@@ -4,6 +4,7 @@ import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CustomCursor from "@/components/CustomCursor";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -20,16 +21,16 @@ const ebGaramond = EB_Garamond({
 
 
 export const metadata: Metadata = {
-  title: "Artisan Jewelry Digital Atelier | 3D Visualization",
-  description: "High-fashion minimalist 3D jewelry renderings and visualization.",
+  title: "Aura | Digital Art & Jewellery Gallery",
+  description: "Curated collections, exhibition previews, and minting interface for 3D jewellery art.",
   openGraph: {
-    title: "Artisan Jewelry Digital Atelier | 3D Visualization",
-    description: "High-fashion minimalist 3D jewelry renderings and visualization.",
+    title: "Aura | Digital Art & Jewellery Gallery",
+    description: "Curated collections, exhibition previews, and minting interface for 3D jewellery art.",
     url: "https://artluxejewelry.com",
-    siteName: "Artisan Jewelry",
+    siteName: "Aura Gallery",
     images: [
       {
-        url: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&q=80&w=1200",
+        url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop",
         width: 1200,
         height: 630,
       },
@@ -50,7 +51,8 @@ export default function RootLayout({
       className={`${inter.variable} ${ebGaramond.variable} antialiased scroll-smooth dark`}
       style={{ colorScheme: "dark" }}
     >
-      <body className="min-h-screen bg-background text-foreground selection:bg-primary/30 flex flex-col font-sans font-light">
+      <body className="min-h-screen bg-[#050505] text-[#f5f5f5] selection:bg-white/20 flex flex-col font-sans font-light overflow-x-hidden">
+        <CustomCursor />
         <SmoothScroll>
           <Header />
           <main className="flex-grow">{children}</main>

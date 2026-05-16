@@ -5,47 +5,78 @@ import gsap from "gsap";
 import { usePathname } from "next/navigation";
 
 export default function CustomCursor() {
-  const cursorRingRef = useRef<HTMLDivElement>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const cursorDotRef = useRef<HTMLDivElement>(null);
   const cursorTextRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
   useEffect(() => {
-    const cursorRing = cursorRingRef.current;
+    const cursor = cursorRef.current;
+    const cursorDot = cursorDotRef.current;
     const cursorText = cursorTextRef.current;
     
-    if (!cursorRing || !cursorText) return;
+    if (!cursor || !cursorDot || !cursorText) return;
 
     // Set initial position
-    gsap.set(cursorRing, { xPercent: -50, yPercent: -50 });
+    gsap.set(cursor, { xPercent: -50, yPercent: -50 });
+    gsap.set(cursorDot, { xPercent: -50, yPercent: -50 });
     gsap.set(cursorText, { xPercent: -50, yPercent: -50 });
 
+    let mouseX = 0;
+    let mouseY = 0;
+    let cursorX = 0;
+    let cursorY = 0;
+
     const moveCursor = (e: MouseEvent) => {
-      gsap.to(cursorRing, {
-        x: e.clientX,
-        y: e.clientY,
-        duration: 0.15,
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      gsap.to(cursorDot, {
+        x: mouseX,
+        y: mouseY,
+        duration: 0.1,
         ease: "power2.out"
       });
+      
       gsap.to(cursorText, {
-        x: e.clientX,
-        y: e.clientY,
-        duration: 0.15,
+        x: mouseX,
+        y: mouseY,
+        duration: 0.1,
         ease: "power2.out"
       });
     };
 
+    // Smooth trailing effect for the ring
+    const render = () => {
+      cursorX += (mouseX - cursorX) * 0.15;
+      cursorY += (mouseY - cursorY) * 0.15;
+      
+      gsap.set(cursor, {
+        x: cursorX,
+        y: cursorY,
+      });
+      
+      requestAnimationFrame(render);
+    };
+    
+    requestAnimationFrame(render);
+
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      // Check if hovering over an image or specific element
-      if (target.closest('img') || target.closest('.hover-discover') || target.closest('video')) {
-        gsap.to(cursorRing, {
-          width: 90,
-          height: 90,
-          backgroundColor: "rgba(0, 0, 0, 0.4)", 
-          backdropFilter: "blur(4px)",
-          borderColor: "rgba(212, 175, 55, 0.5)",
+      
+      if (target.closest('.hover-discover') || target.closest('img')) {
+        gsap.to(cursor, {
+          width: 80,
+          height: 80,
+          backgroundColor: "rgba(255, 255, 255, 0.05)",
+          backdropFilter: "blur(2px)",
+          borderColor: "rgba(255, 255, 255, 0.4)",
           duration: 0.4,
-          ease: "back.out(1.5)"
+          ease: "expo.out"
+        });
+        gsap.to(cursorDot, {
+          scale: 0,
+          duration: 0.3,
         });
         gsap.to(cursorText, {
           opacity: 1,
@@ -53,12 +84,40 @@ export default function CustomCursor() {
           duration: 0.3,
           delay: 0.1
         });
+        if (cursorText) cursorText.innerText = "VIEW";
+      } else if (target.closest('.hover-mint')) {
+        gsap.to(cursor, {
+          width: 80,
+          height: 80,
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          borderColor: "transparent",
+          mixBlendMode: "difference",
+          duration: 0.4,
+          ease: "expo.out"
+        });
+        gsap.to(cursorDot, {
+          scale: 0,
+          duration: 0.3,
+        });
+        gsap.to(cursorText, {
+          opacity: 1,
+          scale: 1,
+          color: "#000",
+          duration: 0.3,
+          delay: 0.1
+        });
+        if (cursorText) cursorText.innerText = "MINT";
       } else if (target.closest('a') || target.closest('button')) {
-        // Standard hover state for links/buttons
-        gsap.to(cursorRing, {
-          width: 40,
-          height: 40,
+        gsap.to(cursor, {
+          width: 48,
+          height: 48,
           backgroundColor: "rgba(255, 255, 255, 0.1)",
+          borderColor: "rgba(255, 255, 255, 0.8)",
+          duration: 0.3,
+          ease: "back.out(2)"
+        });
+        gsap.to(cursorDot, {
+          scale: 0,
           duration: 0.3,
         });
         gsap.to(cursorText, {
@@ -67,17 +126,23 @@ export default function CustomCursor() {
           duration: 0.2,
         });
       } else {
-        gsap.to(cursorRing, {
-          width: 24,
-          height: 24,
+        gsap.to(cursor, {
+          width: 32,
+          height: 32,
           backgroundColor: "transparent",
           backdropFilter: "blur(0px)",
-          borderColor: "rgba(255, 255, 255, 0.3)",
+          borderColor: "rgba(255, 255, 255, 0.2)",
+          mixBlendMode: "normal",
+          duration: 0.3,
+        });
+        gsap.to(cursorDot, {
+          scale: 1,
           duration: 0.3,
         });
         gsap.to(cursorText, {
           opacity: 0,
           scale: 0.5,
+          color: "#fff",
           duration: 0.2,
         });
       }
@@ -94,16 +159,22 @@ export default function CustomCursor() {
 
   return (
     <>
+      {/* Outer Ring */}
       <div 
-        ref={cursorRingRef}
-        className="fixed top-0 left-0 w-6 h-6 border border-white/30 rounded-full pointer-events-none z-[100] transition-colors"
+        ref={cursorRef}
+        className="fixed top-0 left-0 w-8 h-8 border border-white/20 rounded-full pointer-events-none z-[100] transition-colors mix-blend-difference"
       />
+      {/* Inner Dot */}
+      <div 
+        ref={cursorDotRef}
+        className="fixed top-0 left-0 w-1.5 h-1.5 bg-white rounded-full pointer-events-none z-[100] mix-blend-difference"
+      />
+      {/* Text Label */}
       <div 
         ref={cursorTextRef}
-        className="fixed top-0 left-0 pointer-events-none z-[101] opacity-0 scale-50 flex items-center justify-center text-primary text-xl"
-        style={{ fontFamily: 'var(--font-pinyon)' }}
+        className="fixed top-0 left-0 pointer-events-none z-[101] opacity-0 scale-50 flex items-center justify-center text-xs font-medium tracking-[0.2em]"
       >
-        Discover
+        VIEW
       </div>
     </>
   );

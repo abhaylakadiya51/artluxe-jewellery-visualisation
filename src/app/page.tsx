@@ -1,13 +1,17 @@
 import Hero from "@/components/Hero";
-import Services from "@/components/Services";
-import ContactForm from "@/components/ContactForm";
+import Collections from "@/components/Collections";
+import ExhibitionPreviews from "@/components/ExhibitionPreviews";
+import MintingInterface from "@/components/MintingInterface";
+import VerticalTabs from "@/components/ui/vertical-tabs";
 
 export default function Home() {
   return (
     <>
       <Hero />
-      <Services />
-      <ContactForm />
+      <VerticalTabs />
+      <Collections />
+      <ExhibitionPreviews />
+      <MintingInterface />
     </>
   );
 }
